@@ -1,5 +1,6 @@
 package edu.temple.basictimer
 
+import android.R.attr.text
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -34,10 +35,24 @@ class MainActivity : AppCompatActivity() {
             serviceConnection,
             BIND_AUTO_CREATE
         )
-        findViewById<Button>(R.id.startButton).setOnClickListener {
+        findViewById<Button>(R.id.startButton).setOnClickListener { button->
             //check status,
         // if paused then unpause, if unpaused then pause
-            timerBinder?.start(100)
+            timerBinder?.let { it1 ->
+                if(!it1.isRunning){
+                    timerBinder?.start(100)
+                    (button as Button).text = "pause"
+                }
+                else if (it1.isPaused) {
+                    timerBinder?.pause()
+                    (button as Button).text = "pause"
+                }
+                else if (!it1.isPaused){
+                    timerBinder?.pause()
+                    (button as Button).text = "resume"
+                }
+
+            }
         }
         
         findViewById<Button>(R.id.stopButton).setOnClickListener {
