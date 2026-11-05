@@ -11,7 +11,9 @@ import android.os.Bundle
 import android.os.IBinder
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 
 const val myKey = "countdown"
@@ -41,9 +43,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch {
-        TimerInfo.currentTime.collect {
-            displayTextView.text = it.toString()
-        }
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                TimerInfo.currentTime.collect {
+                    displayTextView.text = it.toString()
+                }
+            }
     }
 
         bindService(
