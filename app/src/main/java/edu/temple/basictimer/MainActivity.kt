@@ -1,15 +1,20 @@
 package edu.temple.basictimer
 
 import android.R.attr.text
+import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.Button
+import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
-
+const val myKey = "countdown"
 class MainActivity : AppCompatActivity() {
 
     var timerBinder: TimerService.TimerBinder? = null
@@ -27,9 +32,20 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    val displayTextView: TextView by lazy {
+        findViewById<TextView>(R.id.textView)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        lifecycleScope.launch {
+        TimerInfo.currentTime.collect {
+            displayTextView.text = it.toString()
+        }
+    }
+
         bindService(
             Intent(this, TimerService::class.java),
             serviceConnection,
@@ -57,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         
         findViewById<Button>(R.id.stopButton).setOnClickListener {
             timerBinder?.stop()
+            findViewById<Button>(R.id.startButton).text = "Start"
         }
     }
 }
